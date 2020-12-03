@@ -15,6 +15,7 @@ const request = async ({ url, method, data }: RequestParams) => {
     headers: {},
   }
   const token = localStorage.getItem('token')
+  console.log('token', token)
   if (token) {
     config.headers = {
       ...config.headers,
@@ -26,11 +27,8 @@ const request = async ({ url, method, data }: RequestParams) => {
   try {
     response = await axios(config)
   } catch (e) {
-    console.error(
-      `API Error on '${config.method?.toUpperCase()}' to '${config.url}': ${
-        e.response.data.message
-      }. Errors: ${JSON.stringify(e.response.data.errors)}`,
-    )
+    console.error('API Error', e)
+    e.message = e.response?.data?.message || e.message
     throw e
   }
 
