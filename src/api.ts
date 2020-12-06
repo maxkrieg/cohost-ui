@@ -7,25 +7,20 @@ interface RequestParams {
 }
 
 const request = async ({ url, method, data }: RequestParams) => {
-  const config: AxiosRequestConfig = {
+  const jwtToken = localStorage.getItem('cohostJwt')
+  const requestConfig: AxiosRequestConfig = {
     baseURL: 'http://localhost:5000/api',
     url,
     method,
     data,
-    headers: {},
-  }
-  const token = localStorage.getItem('token')
-  console.log('token', token)
-  if (token) {
-    config.headers = {
-      ...config.headers,
-      Authorization: `Bearer ${token}`,
-    }
+    headers: {
+      Authorization: `Bearer ${jwtToken}`,
+    },
   }
 
   let response: AxiosResponse
   try {
-    response = await axios(config)
+    response = await axios(requestConfig)
   } catch (e) {
     console.error('API Error', e)
     e.message = e.response?.data?.message || e.message

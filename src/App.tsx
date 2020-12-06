@@ -1,15 +1,13 @@
 import React from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
-import HomePage from './HomePage'
-import SignUpPage from './SignUpPage'
+import { HomePage, SignUpPage, LoginPage } from './pages'
 
-const App: React.FC = () => (
+export const App: React.FC = () => (
   <BrowserRouter>
     <Switch>
       <Route path="/" exact component={HomePage} />
       <Route path="/signup" component={SignUpPage} />
+      <Route path="/login" component={LoginPage} />
     </Switch>
   </BrowserRouter>
 )
-
-export default App

@@ -1,42 +1,24 @@
-import React, { useState, ChangeEvent } from 'react'
 import Avatar from '@material-ui/core/Avatar'
-import Button from '@material-ui/core/Button'
-import TextField from '@material-ui/core/TextField'
-import Link from '@material-ui/core/Link'
-import Grid from '@material-ui/core/Grid'
 import Box from '@material-ui/core/Box'
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
-import Typography from '@material-ui/core/Typography'
-import { makeStyles } from '@material-ui/core/styles'
+import Button from '@material-ui/core/Button'
 import Container from '@material-ui/core/Container'
-import { post } from './api'
-import { RouteComponentProps } from 'react-router-dom'
-import Snackbar from '@material-ui/core/Snackbar'
+import Grid from '@material-ui/core/Grid'
 import IconButton from '@material-ui/core/IconButton'
+import Link from '@material-ui/core/Link'
+import Snackbar from '@material-ui/core/Snackbar'
+import { makeStyles } from '@material-ui/core/styles'
+import TextField from '@material-ui/core/TextField'
+import Typography from '@material-ui/core/Typography'
 import CloseIcon from '@material-ui/icons/Close'
-import MuiAlert, { AlertProps } from '@material-ui/lab/Alert'
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
+import React, { ChangeEvent, useState } from 'react'
+import { Link as RouterLink, RouteComponentProps } from 'react-router-dom'
 
-const isValidEmailAddress = (email: string) => {
-  const re = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
-  return re.test(String(email).toLowerCase())
-}
-
-const Alert: React.FC<AlertProps> = (props) => {
-  return <MuiAlert elevation={6} variant="filled" {...props} />
-}
-
-const Copyright: React.FC = () => {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="/">
-        Cohost
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  )
-}
+import { post } from '../api'
+import { UserFieldNames } from '../constants'
+import { UserFormData } from '../interfaces'
+import { isValidEmailAddress } from '../utils'
+import { Alert, Copyright } from '../components'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -58,24 +40,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-enum FieldNames {
-  FirstName = 'firstName',
-  LastName = 'lastName',
-  Email = 'email',
-  Password = 'password',
-  PasswordConfirm = 'passwordConfirm',
-}
-
-interface FormData {
-  [FieldNames.FirstName]: string
-  [FieldNames.LastName]: string
-  [FieldNames.Email]: string
-  [FieldNames.Password]: string
-  [FieldNames.PasswordConfirm]: string
-}
-
-const SignUpPage: React.FC<RouteComponentProps> = (props) => {
-  const defaultFormData: FormData = {
+export const SignUpPage: React.FC<RouteComponentProps> = (props) => {
+  const defaultFormData: UserFormData = {
     firstName: '',
     lastName: '',
     email: '',
@@ -101,10 +67,10 @@ const SignUpPage: React.FC<RouteComponentProps> = (props) => {
       ...formData,
       [name]: value,
     })
-    if (name === FieldNames.Email) {
+    if (name === UserFieldNames.Email) {
       setEmailErrorMessage('')
     }
-    if (name === FieldNames.Password || name === FieldNames.PasswordConfirm) {
+    if (name === UserFieldNames.Password || name === UserFieldNames.PasswordConfirm) {
       setPasswordErrorMessage('')
     }
   }
@@ -135,7 +101,7 @@ const SignUpPage: React.FC<RouteComponentProps> = (props) => {
       return
     }
 
-    const payload: Partial<FormData> = { ...formData }
+    const payload: Partial<UserFormData> = { ...formData }
     delete payload.passwordConfirm
 
     try {
@@ -147,10 +113,10 @@ const SignUpPage: React.FC<RouteComponentProps> = (props) => {
       const errorMessages = e.response?.data?.errors
       if (errorMessages) {
         Object.entries<[string]>(errorMessages).forEach(([field, errorsArray]) => {
-          if (field === FieldNames.Email) {
+          if (field === UserFieldNames.Email) {
             setEmailErrorMessage(errorsArray.join(','))
           }
-          if (field === FieldNames.Password) {
+          if (field === UserFieldNames.Password) {
             setPasswordErrorMessage(errorsArray.join(','))
           }
         })
@@ -171,12 +137,12 @@ const SignUpPage: React.FC<RouteComponentProps> = (props) => {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
-                autoComplete={FieldNames.FirstName}
-                name={FieldNames.FirstName}
+                autoComplete={UserFieldNames.FirstName}
+                name={UserFieldNames.FirstName}
                 variant="outlined"
                 required
                 fullWidth
-                id={FieldNames.FirstName}
+                id={UserFieldNames.FirstName}
                 label="First Name"
                 autoFocus
                 value={formData.firstName}
@@ -188,10 +154,10 @@ const SignUpPage: React.FC<RouteComponentProps> = (props) => {
                 variant="outlined"
                 required
                 fullWidth
-                id={FieldNames.LastName}
+                id={UserFieldNames.LastName}
                 label="Last Name"
-                name={FieldNames.LastName}
-                autoComplete={FieldNames.LastName}
+                name={UserFieldNames.LastName}
+                autoComplete={UserFieldNames.LastName}
                 value={formData.lastName}
                 onChange={handleChange}
               />
@@ -201,10 +167,10 @@ const SignUpPage: React.FC<RouteComponentProps> = (props) => {
                 variant="outlined"
                 required
                 fullWidth
-                id={FieldNames.Email}
+                id={UserFieldNames.Email}
                 label="Email Address"
-                name={FieldNames.Email}
-                autoComplete={FieldNames.Email}
+                name={UserFieldNames.Email}
+                autoComplete={UserFieldNames.Email}
                 value={formData.email}
                 onChange={handleChange}
                 error={!!emailErrorMessage}
@@ -216,11 +182,11 @@ const SignUpPage: React.FC<RouteComponentProps> = (props) => {
                 variant="outlined"
                 required
                 fullWidth
-                name={FieldNames.Password}
+                name={UserFieldNames.Password}
                 label="Password"
-                type={FieldNames.Password}
-                id={FieldNames.Password}
-                autoComplete={FieldNames.Password}
+                type={UserFieldNames.Password}
+                id={UserFieldNames.Password}
+                autoComplete={UserFieldNames.Password}
                 value={formData.password}
                 onChange={handleChange}
                 error={!!passwordErrorMessage}
@@ -232,11 +198,11 @@ const SignUpPage: React.FC<RouteComponentProps> = (props) => {
                 variant="outlined"
                 required
                 fullWidth
-                name={FieldNames.PasswordConfirm}
+                name={UserFieldNames.PasswordConfirm}
                 label="Confirm Password"
-                type={FieldNames.Password}
-                id={FieldNames.PasswordConfirm}
-                autoComplete={FieldNames.PasswordConfirm}
+                type={UserFieldNames.Password}
+                id={UserFieldNames.PasswordConfirm}
+                autoComplete={UserFieldNames.PasswordConfirm}
                 value={formData.passwordConfirm}
                 onChange={handleChange}
                 error={!!passwordErrorMessage}
@@ -253,11 +219,13 @@ const SignUpPage: React.FC<RouteComponentProps> = (props) => {
           >
             Sign Up
           </Button>
-          <Grid container justify="flex-end">
+          <Grid container justify="center">
             <Grid item>
-              <Link href="#" variant="body2">
-                Already have an account? Sign in
-              </Link>
+              <RouterLink to="/login">
+                <Link href="#" variant="body2">
+                  Already have an account? Click here to login
+                </Link>
+              </RouterLink>
             </Grid>
           </Grid>
         </form>
@@ -294,5 +262,3 @@ const SignUpPage: React.FC<RouteComponentProps> = (props) => {
     </Container>
   )
 }
-
-export default SignUpPage
