@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios'
+import Cookies from 'js-cookie'
 
 interface RequestParams {
   url: string
@@ -7,14 +8,15 @@ interface RequestParams {
 }
 
 const request = async ({ url, method, data }: RequestParams) => {
-  const jwtToken = localStorage.getItem('cohostJwt')
   const requestConfig: AxiosRequestConfig = {
-    baseURL: 'http://localhost:5000/api',
+    baseURL: 'http://dev.localhost:5000',
     url,
     method,
     data,
+    withCredentials: true,
     headers: {
-      Authorization: `Bearer ${jwtToken}`,
+      'X-COHOST-CSRF-ACCESS-TOKEN': Cookies.get('cohost_csrf_access_token') || '',
+      'X-COHOST-CSRF-REFRESH-TOKEN': Cookies.get('cohost_csrf_refresh_token') || '',
     },
   }
 

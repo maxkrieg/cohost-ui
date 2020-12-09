@@ -4,7 +4,6 @@ import Button from '@material-ui/core/Button'
 import Container from '@material-ui/core/Container'
 import Grid from '@material-ui/core/Grid'
 import IconButton from '@material-ui/core/IconButton'
-import Link from '@material-ui/core/Link'
 import Snackbar from '@material-ui/core/Snackbar'
 import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
@@ -80,14 +79,12 @@ export const LoginPage: React.FC<RouteComponentProps> = (props) => {
     }
 
     try {
-      const { data } = await post('/login', { email, password })
-      if (data.token) {
-        localStorage.setItem('cohostJwt', data.token)
-      }
+      await post('/auth/login', { email, password })
       setEmail('')
       setPassword('')
       props.history.push('/')
     } catch (e) {
+      console.error(e)
       setSnackbarErrorMessage(e.message)
       setEmail('')
       setPassword('')
@@ -145,11 +142,7 @@ export const LoginPage: React.FC<RouteComponentProps> = (props) => {
           </Button>
           <Grid container justify="center">
             <Grid item>
-              <RouterLink to="/signup">
-                <Link href="#" variant="body2">
-                  Don't have an account? Click here to sign up
-                </Link>
-              </RouterLink>
+              <RouterLink to="/signup">Don't have an account? Click here to sign up</RouterLink>
             </Grid>
           </Grid>
         </form>

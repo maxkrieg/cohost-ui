@@ -4,7 +4,6 @@ import Button from '@material-ui/core/Button'
 import Container from '@material-ui/core/Container'
 import Grid from '@material-ui/core/Grid'
 import IconButton from '@material-ui/core/IconButton'
-import Link from '@material-ui/core/Link'
 import Snackbar from '@material-ui/core/Snackbar'
 import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
@@ -105,7 +104,7 @@ export const SignUpPage: React.FC<RouteComponentProps> = (props) => {
     delete payload.passwordConfirm
 
     try {
-      await post('/signup', payload)
+      await post('/auth/signup', payload)
       setFormData(defaultFormData)
       props.history.push('/')
     } catch (e) {
@@ -221,11 +220,7 @@ export const SignUpPage: React.FC<RouteComponentProps> = (props) => {
           </Button>
           <Grid container justify="center">
             <Grid item>
-              <RouterLink to="/login">
-                <Link href="#" variant="body2">
-                  Already have an account? Click here to login
-                </Link>
-              </RouterLink>
+              <RouterLink to="/login">Already have an account? Click here to login</RouterLink>
             </Grid>
           </Grid>
         </form>
