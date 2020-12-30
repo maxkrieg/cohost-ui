@@ -6,13 +6,16 @@ import ReactDOM from 'react-dom'
 import { App } from './App'
 import reportWebVitals from './reportWebVitals'
 import { theme } from './theme'
+import { UserContextProvider } from './UserContext'
 
 ReactDOM.render(
   <ThemeProvider theme={theme}>
-    <CssBaseline />
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
+    <UserContextProvider>
+      <CssBaseline />
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    </UserContextProvider>
   </ThemeProvider>,
   document.getElementById('root'),
 )

@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const SignUpPage: React.FC<RouteComponentProps> = (props) => {
+export const SignUp: React.FC<RouteComponentProps> = (props) => {
   const defaultFormData: UserFormData = {
     firstName: '',
     lastName: '',

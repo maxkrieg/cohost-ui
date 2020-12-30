@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const LoginPage: React.FC<RouteComponentProps> = (props) => {
+export const Login: React.FC<RouteComponentProps> = (props) => {
   const classes = useStyles()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

@@ -1,3 +1,4 @@
-export * from './HomePage'
-export * from './LoginPage'
-export * from './SignUpPage'
+export * from './Home'
+export * from './Login'
+export * from './SignUp'
+export * from './CreateEvent'

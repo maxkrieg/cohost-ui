@@ -24,7 +24,7 @@ const request = async ({ url, method, data }: RequestParams) => {
   try {
     response = await axios(requestConfig)
   } catch (e) {
-    console.error('API Error', e)
+    console.error(`API Error ${e.response.status}: ${e}`)
     e.message = e.response?.data?.message || e.message
     throw e
   }
