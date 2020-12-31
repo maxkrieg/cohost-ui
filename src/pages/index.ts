@@ -1,4 +1,5 @@
 export * from './Home'
+export * from './PublicHome'
 export * from './Login'
 export * from './SignUp'
 export * from './CreateEvent'
