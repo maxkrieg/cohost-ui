@@ -13,9 +13,10 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import React, { ChangeEvent, useState } from 'react'
 import { Link as RouterLink, RouteComponentProps } from 'react-router-dom'
 
-import { post } from '../api'
+import { get, post } from '../api'
 import { Alert, Copyright } from '../components'
 import { UserFieldNames } from '../constants'
+import { useUser } from '../UserContext'
 import { isValidEmailAddress } from '../utils'
 
 const useStyles = makeStyles((theme) => ({
@@ -43,6 +44,7 @@ export const Login: React.FC<RouteComponentProps> = (props) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [snackbarErrorMessage, setSnackbarErrorMessage] = useState('')
+  const { setUser } = useUser()
 
   const handleCloseErrorDialog = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === 'clickaway') {
@@ -71,6 +73,15 @@ export const Login: React.FC<RouteComponentProps> = (props) => {
     }
   }
 
+  const getAndSetUser = async () => {
+    try {
+      const response = await get('/api/user')
+      setUser(response.data)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   const handleSubmit = async () => {
     try {
       validateFormData()
@@ -82,6 +93,7 @@ export const Login: React.FC<RouteComponentProps> = (props) => {
       await post('/auth/login', { email, password })
       setEmail('')
       setPassword('')
+      await getAndSetUser()
       props.history.push('/')
     } catch (e) {
       console.error(e)

@@ -1,19 +1,24 @@
 import React, { useState } from 'react'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink, useLocation } from 'react-router-dom'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 import AccountCircle from '@material-ui/icons/AccountCircle'
-// import Switch from '@material-ui/core/Switch'
-// import FormControlLabel from '@material-ui/core/FormControlLabel'
-// import FormGroup from '@material-ui/core/FormGroup'
 import MenuItem from '@material-ui/core/MenuItem'
 import Menu from '@material-ui/core/Menu'
 import Button from '@material-ui/core/Button'
 import { useUser } from '../UserContext'
+
+const deLinkify = {
+  textDecoration: 'none',
+  color: 'inherit',
+  '&:focus, &:hover, &:visited, &:link, &:active': {
+    textDecoration: 'none',
+  },
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,16 +28,11 @@ const useStyles = makeStyles((theme: Theme) =>
     menuButton: {
       marginRight: theme.spacing(2),
     },
-    title: {
+    title: deLinkify,
+    titleWrapper: {
       flexGrow: 1,
     },
-    loginButton: {
-      textDecoration: 'none',
-      color: 'inherit',
-      '&:focus, &:hover, &:visited, &:link, &:active': {
-        textDecoration: 'none',
-      },
-    },
+    loginButton: deLinkify,
   }),
 )
 
@@ -41,7 +41,8 @@ export const Nav: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const { user } = useUser()
-  console.log('Nav Component user', user)
+  const location = useLocation()
+  const onLoginPage = location.pathname.includes('login')
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -55,12 +56,23 @@ export const Nav: React.FC = () => {
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            cohost
+          {user && (
+            <IconButton
+              edge="start"
+              className={classes.menuButton}
+              color="inherit"
+              aria-label="menu"
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
+
+          <Typography variant="h6" className={classes.titleWrapper}>
+            <RouterLink to="/" className={classes.title}>
+              cohost
+            </RouterLink>
           </Typography>
+
           {user ? (
             <div>
               {user.firstName}
@@ -93,9 +105,11 @@ export const Nav: React.FC = () => {
               </Menu>
             </div>
           ) : (
-            <RouterLink to="/login" className={classes.loginButton}>
-              <Button color="inherit">Login</Button>
-            </RouterLink>
+            !onLoginPage && (
+              <RouterLink to="/login" className={classes.loginButton}>
+                <Button color="inherit">Login</Button>
+              </RouterLink>
+            )
           )}
         </Toolbar>
       </AppBar>
