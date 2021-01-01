@@ -18,6 +18,7 @@ import { UserFieldNames } from '../constants'
 import { UserFormData } from '../interfaces'
 import { isValidEmailAddress } from '../utils'
 import { Alert, Copyright } from '../components'
+import { useUser, User } from '../UserContext'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -48,6 +49,7 @@ export const SignUp: React.FC<RouteComponentProps> = (props) => {
     passwordConfirm: '',
   }
   const classes = useStyles()
+  const { setUser } = useUser()
   const [formData, setFormData] = useState(defaultFormData)
   const [snackbarErrorMessage, setSnackbarErrorMessage] = useState('')
   const [emailErrorMessage, setEmailErrorMessage] = useState('')
@@ -92,21 +94,14 @@ export const SignUp: React.FC<RouteComponentProps> = (props) => {
     }
   }
 
-  const handleSubmit = async () => {
-    try {
-      validateFormData()
-    } catch (e) {
-      console.error('Error validating form data', e)
-      return
-    }
-
+  const signUpUser = async () => {
     const payload: Partial<UserFormData> = { ...formData }
     delete payload.passwordConfirm
 
+    let user: User
     try {
-      await post('/auth/signup', payload)
-      setFormData(defaultFormData)
-      props.history.push('/')
+      const response = await post('/auth/signup', payload)
+      user = response.data
     } catch (e) {
       setSnackbarErrorMessage(e.message)
       const errorMessages = e.response?.data?.errors
@@ -120,7 +115,40 @@ export const SignUp: React.FC<RouteComponentProps> = (props) => {
           }
         })
       }
+      throw e
     }
+
+    return user
+  }
+
+  const loginUser = async () => {
+    const { email, password } = formData
+    try {
+      await post('/auth/login', { email, password })
+    } catch (e) {
+      console.error('Error logging in user after signup', e)
+    }
+  }
+
+  const handleSubmit = async () => {
+    try {
+      validateFormData()
+    } catch (e) {
+      console.error('Error validating form data', e)
+      return
+    }
+
+    let user: User
+    try {
+      user = await signUpUser()
+    } catch (e) {
+      console.error('Error with user signup', e)
+      return
+    }
+
+    loginUser()
+    setUser(user)
+    props.history.push('/')
   }
 
   return (
