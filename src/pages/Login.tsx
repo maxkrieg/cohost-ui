@@ -78,7 +78,7 @@ export const Login: React.FC<RouteComponentProps> = (props) => {
       const response = await get('/api/user')
       setUser(response.data)
     } catch (e) {
-      console.error(e)
+      console.error('Error getting and setting user after login', e)
     }
   }
 
@@ -91,16 +91,13 @@ export const Login: React.FC<RouteComponentProps> = (props) => {
 
     try {
       await post('/auth/login', { email, password })
-      setEmail('')
-      setPassword('')
-      await getAndSetUser()
-      props.history.push('/')
     } catch (e) {
-      console.error(e)
-      setSnackbarErrorMessage(e.message)
-      setEmail('')
-      setPassword('')
+      console.error('Error with login', e)
+      return setSnackbarErrorMessage(e.message)
     }
+
+    await getAndSetUser()
+    props.history.push('/')
   }
 
   return (

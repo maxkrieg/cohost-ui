@@ -2,8 +2,11 @@ import { createContext, Dispatch, SetStateAction, useContext, useEffect, useStat
 import { get } from './api'
 
 export interface User {
+  email?: string
+  handle?: string
   firstName?: string
   lastName?: string
+  isAdmin?: boolean
 }
 
 export type UserContextType = {
