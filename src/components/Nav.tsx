@@ -10,6 +10,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle'
 import MenuIcon from '@material-ui/icons/Menu'
 import React, { useState } from 'react'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
+import { logoutUser } from '../api'
 
 import { useUser } from '../UserContext'
 
@@ -41,7 +42,7 @@ export const Nav: React.FC = () => {
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
-  const { user } = useUser()
+  const { user, setUser } = useUser()
   const location = useLocation()
   const onLoginPage = location.pathname.includes('login')
 
@@ -51,6 +52,16 @@ export const Nav: React.FC = () => {
 
   const handleClose = () => {
     setAnchorEl(null)
+  }
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser()
+    } catch (e) {
+      console.log('Error loggin out (Nav)')
+      return
+    }
+    setUser(null)
   }
 
   return (
@@ -102,7 +113,7 @@ export const Nav: React.FC = () => {
                 onClose={handleClose}
               >
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
             </div>
           ) : (

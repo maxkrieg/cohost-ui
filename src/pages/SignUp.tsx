@@ -12,7 +12,7 @@ import CloseIcon from '@material-ui/icons/Close'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import { AxiosError } from 'axios'
 import React, { ChangeEvent, useState } from 'react'
-import { Link as RouterLink, RouteComponentProps } from 'react-router-dom'
+import { Link as RouterLink, Redirect } from 'react-router-dom'
 
 import { loginUser, signUpUser } from '../api'
 import { Alert, Copyright } from '../components'
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const SignUp: React.FC<RouteComponentProps> = (props) => {
+export const SignUp: React.FC = () => {
   const defaultFormData: IUserSignUp = {
     firstName: '',
     lastName: '',
@@ -50,7 +50,7 @@ export const SignUp: React.FC<RouteComponentProps> = (props) => {
     passwordConfirm: '',
   }
   const classes = useStyles()
-  const { setUser } = useUser()
+  const { user, setUser } = useUser()
   const [formData, setFormData] = useState(defaultFormData)
   const [snackbarErrorMessage, setSnackbarErrorMessage] = useState('')
   const [emailErrorMessage, setEmailErrorMessage] = useState('')
@@ -131,7 +131,10 @@ export const SignUp: React.FC<RouteComponentProps> = (props) => {
     const { email, password } = formData
     loginUser(email!, password!)
     setUser(user)
-    props.history.push('/')
+  }
+
+  if (user) {
+    return <Redirect to="/" />
   }
 
   return (

@@ -36,6 +36,6 @@ export const get = async (url: string) => {
   return request({ url, method: 'get' })
 }
 
-export const post = async (url: string, data: any) => {
+export const post = async (url: string, data?: any) => {
   return request({ url, method: 'post', data })
 }

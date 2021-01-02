@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
 
 const cards = [1, 2, 3]
 
-export const PublicHome = () => {
+export const PublicHome: React.FC = () => {
   const classes = useStyles()
 
   return (

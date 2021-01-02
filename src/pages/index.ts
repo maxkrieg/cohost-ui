@@ -1,4 +1,4 @@
-export * from './Home'
+export * from './UserHome'
 export * from './PublicHome'
 export * from './Login'
 export * from './SignUp'

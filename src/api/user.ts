@@ -22,6 +22,15 @@ export const loginUser = async (email: string, password: string) => {
   }
 }
 
+export const logoutUser = async () => {
+  try {
+    await post('/auth/logout')
+  } catch (e) {
+    console.error('Error logging out user', e)
+    throw e
+  }
+}
+
 export const signUpUser = async (userPayload: IUserSignUp): Promise<IUser> => {
   let user: IUser
   try {

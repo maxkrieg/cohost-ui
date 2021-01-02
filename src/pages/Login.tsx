@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography'
 import CloseIcon from '@material-ui/icons/Close'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import React, { ChangeEvent, useState } from 'react'
-import { Link as RouterLink, RouteComponentProps } from 'react-router-dom'
+import { Link as RouterLink, Redirect } from 'react-router-dom'
 
 import { fetchUser, loginUser } from '../api'
 import { Alert, Copyright } from '../components'
@@ -39,12 +39,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const Login: React.FC<RouteComponentProps> = (props) => {
+export const Login: React.FC = () => {
   const classes = useStyles()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [snackbarErrorMessage, setSnackbarErrorMessage] = useState('')
-  const { setUser } = useUser()
+  const { user, setUser } = useUser()
 
   const handleCloseErrorDialog = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === 'clickaway') {
@@ -88,11 +88,14 @@ export const Login: React.FC<RouteComponentProps> = (props) => {
 
     const user = await fetchUser()
     if (user) {
-      setUser(user)
-      return props.history.push('/')
+      return setUser(user)
     }
 
     setSnackbarErrorMessage('Error logging in')
+  }
+
+  if (user) {
+    return <Redirect to="/" />
   }
 
   return (
