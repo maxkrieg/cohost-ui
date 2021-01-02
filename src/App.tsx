@@ -1,7 +1,8 @@
 import React from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
-import { Home, PublicHome, SignUp, Login, CreateEvent } from './pages'
+
 import { Nav } from './components'
+import { CreateEvent, Home, Login, PublicHome, SignUp } from './pages'
 import { useUser } from './UserContext'
 
 export const App: React.FC = () => {

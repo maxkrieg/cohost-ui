@@ -1,5 +1,5 @@
-import React from 'react'
 import Typography from '@material-ui/core/Typography'
+import React from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 
 export const Copyright: React.FC = () => {
