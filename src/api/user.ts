@@ -1,8 +1,8 @@
-import { User } from './../interfaces'
+import { IUser, IUserSignUp } from './../interfaces'
 import { get, post } from './utils'
 
-export const fetchUser = async (): Promise<Partial<User> | null> => {
-  let user: Partial<User>
+export const fetchUser = async (): Promise<IUser | null> => {
+  let user: IUser
   try {
     const response = await get('/api/user')
     user = response.data
@@ -22,8 +22,8 @@ export const loginUser = async (email: string, password: string) => {
   }
 }
 
-export const signUpUser = async (userPayload: Partial<User>): Promise<User> => {
-  let user: User
+export const signUpUser = async (userPayload: IUserSignUp): Promise<IUser> => {
+  let user: IUser
   try {
     const response = await post('/auth/signup', userPayload)
     user = response.data

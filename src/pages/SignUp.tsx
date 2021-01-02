@@ -10,16 +10,16 @@ import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import CloseIcon from '@material-ui/icons/Close'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
+import { AxiosError } from 'axios'
 import React, { ChangeEvent, useState } from 'react'
 import { Link as RouterLink, RouteComponentProps } from 'react-router-dom'
 
 import { loginUser, signUpUser } from '../api'
-import { UserFieldNames } from '../constants'
-import { User } from '../interfaces'
-import { isValidEmailAddress } from '../utils'
 import { Alert, Copyright } from '../components'
+import { UserFieldNames } from '../constants'
+import { IUser, IUserSignUp } from '../interfaces'
 import { useUser } from '../UserContext'
-import { AxiosError } from 'axios'
+import { isValidEmailAddress } from '../utils'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export const SignUp: React.FC<RouteComponentProps> = (props) => {
-  const defaultFormData: Partial<User> = {
+  const defaultFormData: IUserSignUp = {
     firstName: '',
     lastName: '',
     email: '',
@@ -78,7 +78,7 @@ export const SignUp: React.FC<RouteComponentProps> = (props) => {
   }
 
   const validateFormData = () => {
-    const allHaveValues = Object.values(formData).every((value) => !!value)
+    const allHaveValues = Object.values(formData).every((value: string) => value.length > 0)
     if (!allHaveValues) {
       setSnackbarErrorMessage('Please ensure all required fields (marked with *) are filled in')
       throw new Error('Fields missing values')
@@ -118,10 +118,10 @@ export const SignUp: React.FC<RouteComponentProps> = (props) => {
       return
     }
 
-    const userPayload: Partial<User> = { ...formData }
+    const userPayload = { ...formData }
     delete userPayload.passwordConfirm
 
-    let user: User
+    let user: IUser
     try {
       user = await signUpUser(userPayload)
     } catch (e) {
