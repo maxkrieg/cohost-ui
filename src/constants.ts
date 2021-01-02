@@ -4,4 +4,5 @@ export enum UserFieldNames {
   Email = 'email',
   Password = 'password',
   PasswordConfirm = 'passwordConfirm',
+  IsAdmin = 'isAdmin',
 }

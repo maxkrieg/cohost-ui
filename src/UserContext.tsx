@@ -1,17 +1,10 @@
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
-import { get } from './api'
-
-export interface User {
-  email?: string
-  handle?: string
-  firstName?: string
-  lastName?: string
-  isAdmin?: boolean
-}
+import { fetchUser } from './api'
+import { User } from './interfaces'
 
 export type UserContextType = {
-  user: User | null
-  setUser: Dispatch<SetStateAction<User | null>>
+  user: Partial<User> | null
+  setUser: Dispatch<SetStateAction<Partial<User> | null>>
 }
 
 export const UserContext = createContext<UserContextType>({
@@ -20,15 +13,15 @@ export const UserContext = createContext<UserContextType>({
 })
 
 export const UserContextProvider: React.FC = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<Partial<User> | null>(null)
 
   useEffect(() => {
     const getUser = async () => {
       try {
-        const response = await get('/api/user')
-        setUser(response.data)
+        const fetchedUser = await fetchUser()
+        setUser(fetchedUser)
       } catch (e) {
-        console.error('error getting user in UserContextProvider')
+        console.error('Error getting user in UserContextProvider')
       }
     }
     getUser()

@@ -13,7 +13,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import React, { ChangeEvent, useState } from 'react'
 import { Link as RouterLink, RouteComponentProps } from 'react-router-dom'
 
-import { get, post } from '../api'
+import { fetchUser, loginUser } from '../api'
 import { Alert, Copyright } from '../components'
 import { UserFieldNames } from '../constants'
 import { useUser } from '../UserContext'
@@ -73,15 +73,6 @@ export const Login: React.FC<RouteComponentProps> = (props) => {
     }
   }
 
-  const getAndSetUser = async () => {
-    try {
-      const response = await get('/api/user')
-      setUser(response.data)
-    } catch (e) {
-      console.error('Error getting and setting user after login', e)
-    }
-  }
-
   const handleSubmit = async () => {
     try {
       validateFormData()
@@ -90,14 +81,18 @@ export const Login: React.FC<RouteComponentProps> = (props) => {
     }
 
     try {
-      await post('/auth/login', { email, password })
+      await loginUser(email, password)
     } catch (e) {
-      console.error('Error with login', e)
       return setSnackbarErrorMessage(e.message)
     }
 
-    await getAndSetUser()
-    props.history.push('/')
+    const user = await fetchUser()
+    if (user) {
+      setUser(user)
+      return props.history.push('/')
+    }
+
+    setSnackbarErrorMessage('Error logging in')
   }
 
   return (

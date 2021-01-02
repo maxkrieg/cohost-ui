@@ -13,12 +13,13 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import React, { ChangeEvent, useState } from 'react'
 import { Link as RouterLink, RouteComponentProps } from 'react-router-dom'
 
-import { post } from '../api'
+import { loginUser, signUpUser } from '../api'
 import { UserFieldNames } from '../constants'
-import { UserFormData } from '../interfaces'
+import { User } from '../interfaces'
 import { isValidEmailAddress } from '../utils'
 import { Alert, Copyright } from '../components'
-import { useUser, User } from '../UserContext'
+import { useUser } from '../UserContext'
+import { AxiosError } from 'axios'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -41,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export const SignUp: React.FC<RouteComponentProps> = (props) => {
-  const defaultFormData: UserFormData = {
+  const defaultFormData: Partial<User> = {
     firstName: '',
     lastName: '',
     email: '',
@@ -77,13 +78,13 @@ export const SignUp: React.FC<RouteComponentProps> = (props) => {
   }
 
   const validateFormData = () => {
-    const allHaveValues = Object.values(formData).every((value: string) => value.length > 0)
+    const allHaveValues = Object.values(formData).every((value) => !!value)
     if (!allHaveValues) {
       setSnackbarErrorMessage('Please ensure all required fields (marked with *) are filled in')
       throw new Error('Fields missing values')
     }
 
-    if (!isValidEmailAddress(formData.email)) {
+    if (!isValidEmailAddress(formData.email!)) {
       setEmailErrorMessage('Please enter a valid email address.')
       throw new Error('Invalid email address')
     }
@@ -94,39 +95,18 @@ export const SignUp: React.FC<RouteComponentProps> = (props) => {
     }
   }
 
-  const signUpUser = async () => {
-    const payload: Partial<UserFormData> = { ...formData }
-    delete payload.passwordConfirm
-
-    let user: User
-    try {
-      const response = await post('/auth/signup', payload)
-      user = response.data
-    } catch (e) {
-      setSnackbarErrorMessage(e.message)
-      const errorMessages = e.response?.data?.errors
-      if (errorMessages) {
-        Object.entries<[string]>(errorMessages).forEach(([field, errorsArray]) => {
-          if (field === UserFieldNames.Email) {
-            setEmailErrorMessage(errorsArray.join(','))
-          }
-          if (field === UserFieldNames.Password) {
-            setPasswordErrorMessage(errorsArray.join(','))
-          }
-        })
-      }
-      throw e
-    }
-
-    return user
-  }
-
-  const loginUser = async () => {
-    const { email, password } = formData
-    try {
-      await post('/auth/login', { email, password })
-    } catch (e) {
-      console.error('Error logging in user after signup', e)
+  const handleSignUpError = (e: AxiosError) => {
+    setSnackbarErrorMessage(e.message)
+    const errorMessages = e.response?.data?.errors
+    if (errorMessages) {
+      Object.entries<[string]>(errorMessages).forEach(([field, errorsArray]) => {
+        if (field === UserFieldNames.Email) {
+          setEmailErrorMessage(errorsArray.join(','))
+        }
+        if (field === UserFieldNames.Password) {
+          setPasswordErrorMessage(errorsArray.join(','))
+        }
+      })
     }
   }
 
@@ -138,15 +118,18 @@ export const SignUp: React.FC<RouteComponentProps> = (props) => {
       return
     }
 
+    const userPayload: Partial<User> = { ...formData }
+    delete userPayload.passwordConfirm
+
     let user: User
     try {
-      user = await signUpUser()
+      user = await signUpUser(userPayload)
     } catch (e) {
-      console.error('Error with user signup', e)
-      return
+      return handleSignUpError(e)
     }
 
-    loginUser()
+    const { email, password } = formData
+    loginUser(email!, password!)
     setUser(user)
     props.history.push('/')
   }
