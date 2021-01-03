@@ -10,22 +10,30 @@ import {
 import { StaticContext } from 'react-router'
 
 import { Nav } from './components'
-import { CreateEvent, UserHome, Login, PublicHome, SignUp } from './pages'
+import { CreateEvent, UserHome, Login, PublicHome, SignUp, Loading } from './pages'
 import { useUser } from './UserContext'
 
-const PrivateRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
+interface PrivateRouteProps extends RouteProps {
+  redirectTo?: string
+}
+
+const PrivateRoute: React.FC<PrivateRouteProps> = ({
+  redirectTo = '/login',
+  children,
+  ...rest
+}) => {
   const { user, initialized } = useUser()
   const renderFunc = ({ location }: RouteComponentProps<any, StaticContext, unknown>) => {
     if (user) {
       return children
     }
     if (!initialized) {
-      return <div>Loading page</div>
+      return <Loading />
     }
     return (
       <Redirect
         to={{
-          pathname: '/login',
+          pathname: redirectTo,
           state: { from: location },
         }}
       />
@@ -35,7 +43,7 @@ const PrivateRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
 }
 
 export const App: React.FC = () => {
-  const { user } = useUser()
+  const { user, initialized } = useUser()
   return (
     <BrowserRouter>
       <Nav />
@@ -43,8 +51,12 @@ export const App: React.FC = () => {
         <Route exact path="/">
           {user ? <UserHome /> : <PublicHome />}
         </Route>
-        <Route path="/signup">{user ? <Redirect to="/" /> : <SignUp />}</Route>
-        <Route path="/login">{user ? <Redirect to="/" /> : <Login />}</Route>
+        <Route path="/signup">
+          {user ? <Redirect to="/" /> : initialized ? <SignUp /> : <Loading />}
+        </Route>
+        <Route path="/login">
+          {user ? <Redirect to="/" /> : initialized ? <Login /> : <Loading />}
+        </Route>
         <PrivateRoute path="/create">
           <CreateEvent />
         </PrivateRoute>
