@@ -1,5 +1,8 @@
+import 'date-fns'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { ThemeProvider } from '@material-ui/core/styles'
+import { MuiPickersUtilsProvider } from '@material-ui/pickers'
+import DateFnsUtils from '@date-io/date-fns'
 import React from 'react'
 import ReactDOM from 'react-dom'
 
@@ -11,10 +14,12 @@ import { UserContextProvider } from './UserContext'
 ReactDOM.render(
   <ThemeProvider theme={theme}>
     <UserContextProvider>
-      <CssBaseline />
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <CssBaseline />
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      </MuiPickersUtilsProvider>
     </UserContextProvider>
   </ThemeProvider>,
   document.getElementById('root'),
