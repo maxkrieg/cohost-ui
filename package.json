@@ -54,7 +54,6 @@
   },
   "devDependencies": {
     "@types/autosuggest-highlight": "^3.1.1",
-    "@types/google-map-react": "^2.1.0",
     "@types/googlemaps": "^3.43.1",
     "@types/js-cookie": "^2.2.6",
     "@types/lodash": "^4.14.167",

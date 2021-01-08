@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   BrowserRouter,
   Redirect,
@@ -12,6 +12,7 @@ import { StaticContext } from 'react-router'
 import { Nav } from './components'
 import { CreateEvent, UserHome, Login, PublicHome, SignUp, Loading } from './pages'
 import { useUser } from './UserContext'
+import { loadGoogleMapsScript } from './utils'
 
 interface PrivateRouteProps extends RouteProps {
   redirectTo?: string
@@ -44,6 +45,21 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
 
 export const App: React.FC = () => {
   const { user, initialized } = useUser()
+  const [mapsScriptLoaded, setMapsScriptLoaded] = useState(false)
+
+  const handleMapsScriptLoad = useCallback(() => {
+    console.log('maps script loaded')
+    setMapsScriptLoaded(true)
+  }, [setMapsScriptLoaded])
+
+  useEffect(() => {
+    const script = loadGoogleMapsScript()
+    script.addEventListener('load', handleMapsScriptLoad)
+    return () => {
+      script.removeEventListener('load', handleMapsScriptLoad)
+    }
+  }, [mapsScriptLoaded, handleMapsScriptLoad])
+
   return (
     <BrowserRouter>
       <Nav />

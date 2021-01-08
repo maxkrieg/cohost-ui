@@ -7,35 +7,8 @@ import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/core/styles'
 import parse from 'autosuggest-highlight/parse'
 import throttle from 'lodash/throttle'
-import GoogleMapReact, { Coords } from 'google-map-react'
-
-const defaultLocation = {
-  lat: 40.7607793,
-  lng: -111.8910474,
-}
-
-const Marker: React.FC<{ lat: number; lng: number }> = () => (
-  <div>
-    <LocationOnIcon fontSize="large" />
-  </div>
-)
-
-const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY
-
-function loadScript(src: string, position: HTMLElement | null, id: string) {
-  if (!position) {
-    return
-  }
-
-  const script = document.createElement('script')
-  script.setAttribute('async', '')
-  script.setAttribute('id', id)
-  script.src = src
-  position.appendChild(script)
-}
 
 let autocompleteService: google.maps.places.AutocompleteService | null = null
-// const placesService = { current: null }
 let geocoderService: google.maps.Geocoder | null = null
 
 const useStyles = makeStyles((theme) => ({
@@ -49,21 +22,8 @@ export const LocationSearch = () => {
   const classes = useStyles()
   const [value, setValue] = React.useState<google.maps.places.AutocompletePrediction | null>(null)
   const [inputValue, setInputValue] = React.useState('')
-  const [location, setLocation] = React.useState<Coords | null>(null)
+  const [location, setLocation] = React.useState<google.maps.LatLngLiteral | null>(null)
   const [options, setOptions] = React.useState<google.maps.places.AutocompletePrediction[]>([])
-  const loaded = React.useRef(false)
-
-  if (typeof window !== 'undefined' && !loaded.current) {
-    if (!document.querySelector('#google-maps')) {
-      loadScript(
-        `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`,
-        document.querySelector('head'),
-        'google-maps',
-      )
-    }
-
-    loaded.current = true
-  }
 
   const fetch = React.useMemo(
     () =>
@@ -119,21 +79,21 @@ export const LocationSearch = () => {
   }, [value, inputValue, fetch])
 
   React.useEffect(() => {
-    console.log('use effect 2')
+    if (!value) {
+      setLocation(null)
+      return
+    }
+
     if (!geocoderService && window.google) {
       geocoderService = new window.google.maps.Geocoder()
     }
     if (!geocoderService) {
       return undefined
     }
-
-    if (value) {
-      console.log('Value changed')
-      geocoderService.geocode({ placeId: value.place_id }, (geocoderResults) => {
-        const { lat: getLat, lng: getLng } = geocoderResults[0].geometry.location
-        setLocation({ lat: getLat(), lng: getLng() })
-      })
-    }
+    geocoderService.geocode({ placeId: value.place_id }, (geocoderResults) => {
+      const { lat: getLat, lng: getLng } = geocoderResults[0].geometry.location
+      setLocation({ lat: getLat(), lng: getLng() })
+    })
   }, [value])
 
   return (
@@ -148,12 +108,12 @@ export const LocationSearch = () => {
         filterSelectedOptions
         value={value}
         onChange={(event: any, newValue: google.maps.places.AutocompletePrediction | null) => {
-          console.log('onChange newValue', newValue)
+          console.log('onChange', newValue)
           setOptions(newValue ? [newValue, ...options] : options)
           setValue(newValue)
         }}
         onInputChange={(event, newInputValue) => {
-          console.log('onInputChange newInputValue', newInputValue)
+          console.log('onInputChange', newInputValue)
           setInputValue(newInputValue)
         }}
         renderInput={(params) => (
@@ -185,10 +145,10 @@ export const LocationSearch = () => {
         }}
       />
 
-      <div style={{ height: '300px', width: '100%', marginTop: '15px' }}>
+      {/* <div style={{ height: '300px', width: '100%', marginTop: '15px' }}>
         <GoogleMapReact
           bootstrapURLKeys={{ key: GOOGLE_MAPS_API_KEY! }}
-          yesIWantToUseGoogleMapApiInternals
+          // yesIWantToUseGoogleMapApiInternals
           defaultCenter={defaultLocation}
           center={location || defaultLocation}
           zoom={15}
@@ -199,7 +159,7 @@ export const LocationSearch = () => {
             lng={location ? location.lng : defaultLocation.lng}
           />
         </GoogleMapReact>
-      </div>
+      </div> */}
     </>
   )
 }
