@@ -1,12 +1,14 @@
-import React from 'react'
-import TextField from '@material-ui/core/TextField'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import LocationOnIcon from '@material-ui/icons/LocationOn'
 import Grid from '@material-ui/core/Grid'
-import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/core/styles'
+import TextField from '@material-ui/core/TextField'
+import Typography from '@material-ui/core/Typography'
+import LocationOnIcon from '@material-ui/icons/LocationOn'
+import Autocomplete from '@material-ui/lab/Autocomplete'
 import parse from 'autosuggest-highlight/parse'
 import throttle from 'lodash/throttle'
+import React from 'react'
+
+import { Map } from './Map'
 
 let autocompleteService: google.maps.places.AutocompleteService | null = null
 let geocoderService: google.maps.Geocoder | null = null
@@ -108,12 +110,10 @@ export const LocationSearch = () => {
         filterSelectedOptions
         value={value}
         onChange={(event: any, newValue: google.maps.places.AutocompletePrediction | null) => {
-          console.log('onChange', newValue)
           setOptions(newValue ? [newValue, ...options] : options)
           setValue(newValue)
         }}
         onInputChange={(event, newInputValue) => {
-          console.log('onInputChange', newInputValue)
           setInputValue(newInputValue)
         }}
         renderInput={(params) => (
@@ -144,22 +144,15 @@ export const LocationSearch = () => {
           )
         }}
       />
-
-      {/* <div style={{ height: '300px', width: '100%', marginTop: '15px' }}>
-        <GoogleMapReact
-          bootstrapURLKeys={{ key: GOOGLE_MAPS_API_KEY! }}
-          // yesIWantToUseGoogleMapApiInternals
-          defaultCenter={defaultLocation}
-          center={location || defaultLocation}
-          zoom={15}
-          defaultZoom={15}
-        >
-          <Marker
-            lat={location ? location.lat : defaultLocation.lat}
-            lng={location ? location.lng : defaultLocation.lng}
-          />
-        </GoogleMapReact>
-      </div> */}
+      <div
+        style={{
+          width: '100%',
+          height: `${location ? '300px' : '0px'}`,
+          marginTop: '10px',
+        }}
+      >
+        {location && <Map location={location} zoom={15} />}
+      </div>
     </>
   )
 }
