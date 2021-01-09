@@ -21,7 +21,7 @@ export const Map: React.FC<MapProps> = ({ location, zoom = 15 }) => {
         zoom,
         center: location || defaultLocation,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
-        mapTypeControl: true,
+        mapTypeControl: false,
         streetViewControl: false,
       })
       const newMarker = new google.maps.Marker({ map: newMap, draggable: false, clickable: false })
