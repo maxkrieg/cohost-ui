@@ -4,7 +4,7 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
 import { Nav } from './components'
 import { CreateEvent, UserHome, Login, PublicHome, SignUp, Loading } from './pages'
 import { PrivateRoute } from './components'
-import { useUser } from './UserContext'
+import { useUser } from './state'
 import { loadGoogleMapsScript } from './utils'
 
 export const App: React.FC = () => {

@@ -12,7 +12,7 @@ import React, { useState } from 'react'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
 import { logoutUser } from '../api'
 
-import { useUser } from '../UserContext'
+import { useUser } from '../state'
 
 const deLinkify = {
   textDecoration: 'none',

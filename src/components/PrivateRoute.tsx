@@ -3,7 +3,7 @@ import { StaticContext } from 'react-router'
 import { Redirect, Route, RouteComponentProps, RouteProps } from 'react-router-dom'
 
 import { Loading } from '../pages'
-import { useUser } from '../UserContext'
+import { useUser } from '../state'
 
 export interface PrivateRouteProps extends RouteProps {
   redirectTo?: string

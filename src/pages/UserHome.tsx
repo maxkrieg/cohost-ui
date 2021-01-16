@@ -2,7 +2,7 @@ import Container from '@material-ui/core/Container'
 import React from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 
-import { useUser } from '../UserContext'
+import { useUser } from '../state'
 
 export const UserHome: React.FC = () => {
   const { user } = useUser()

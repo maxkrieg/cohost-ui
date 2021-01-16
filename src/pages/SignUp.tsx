@@ -18,7 +18,7 @@ import { loginUser, signUpUser } from '../api'
 import { Alert, Copyright } from '../components'
 import { UserFieldNames } from '../constants'
 import { IUser, IUserSignUp } from '../interfaces'
-import { useUser } from '../UserContext'
+import { useUser } from '../state'
 import { isValidEmailAddress } from '../utils'
 
 const useStyles = makeStyles((theme) => ({

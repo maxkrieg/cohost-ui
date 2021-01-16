@@ -9,7 +9,7 @@ import ReactDOM from 'react-dom'
 import { App } from './App'
 import reportWebVitals from './reportWebVitals'
 import { theme } from './theme'
-import { UserContextProvider } from './UserContext'
+import { UserContextProvider } from './state'
 
 ReactDOM.render(
   <ThemeProvider theme={theme}>

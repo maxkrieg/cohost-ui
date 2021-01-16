@@ -1,7 +1,7 @@
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
 
-import { fetchUser } from './api'
-import { IUser } from './interfaces'
+import { fetchUser } from '../api'
+import { IUser } from '../interfaces'
 
 export type UserContextType = {
   user: IUser | null
