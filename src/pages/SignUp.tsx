@@ -18,7 +18,7 @@ import { loginUser, signUpUser } from '../api'
 import { Alert, Copyright } from '../components'
 import { UserFieldNames } from '../constants'
 import { IUser, IUserSignUp } from '../interfaces'
-import { useUser } from '../state'
+import { useUserContext } from '../state'
 import { isValidEmailAddress } from '../utils'
 
 const useStyles = makeStyles((theme) => ({
@@ -50,7 +50,7 @@ export const SignUp: React.FC = () => {
     passwordConfirm: '',
   }
   const classes = useStyles()
-  const { user, setUser } = useUser()
+  const { user, setUser } = useUserContext()
   const [formData, setFormData] = useState(defaultFormData)
   const [snackbarErrorMessage, setSnackbarErrorMessage] = useState('')
   const [emailErrorMessage, setEmailErrorMessage] = useState('')

@@ -16,7 +16,7 @@ import { Link as RouterLink, Redirect } from 'react-router-dom'
 import { fetchUser, loginUser } from '../api'
 import { Alert, Copyright } from '../components'
 import { UserFieldNames } from '../constants'
-import { useUser } from '../state'
+import { useUserContext } from '../state'
 import { isValidEmailAddress } from '../utils'
 
 const useStyles = makeStyles((theme) => ({
@@ -44,7 +44,7 @@ export const Login: React.FC = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [snackbarErrorMessage, setSnackbarErrorMessage] = useState('')
-  const { user, setUser } = useUser()
+  const { user, setUser } = useUserContext()
 
   const handleCloseErrorDialog = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === 'clickaway') {

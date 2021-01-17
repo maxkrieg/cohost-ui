@@ -12,7 +12,7 @@ import React, { useState } from 'react'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
 import { logoutUser } from '../api'
 
-import { useUser } from '../state'
+import { useUserContext } from '../state'
 
 const deLinkify = {
   textDecoration: 'none',
@@ -42,7 +42,7 @@ export const Nav: React.FC = () => {
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
-  const { user, setUser } = useUser()
+  const { user, setUser } = useUserContext()
   const location = useLocation()
   const onLoginPage = location.pathname.includes('login')
 

@@ -3,7 +3,7 @@ import { StaticContext } from 'react-router'
 import { Redirect, Route, RouteComponentProps, RouteProps } from 'react-router-dom'
 
 import { Loading } from '../pages'
-import { useUser } from '../state'
+import { useUserContext } from '../state'
 
 export interface PrivateRouteProps extends RouteProps {
   redirectTo?: string
@@ -14,7 +14,7 @@ export const PrivateRoute: React.FC<PrivateRouteProps> = ({
   children,
   ...rest
 }) => {
-  const { user, initialized } = useUser()
+  const { user, initialized } = useUserContext()
   const renderFunc = ({ location }: RouteComponentProps<any, StaticContext, unknown>) => {
     if (user) {
       return children

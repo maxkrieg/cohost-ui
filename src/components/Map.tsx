@@ -1,25 +1,25 @@
-import React from 'react'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
 
 interface MapProps {
-  location: google.maps.LatLngLiteral | null
+  latLng: google.maps.LatLngLiteral | null
   zoom?: number
 }
 
-const defaultLocation: google.maps.LatLngLiteral = {
+const defaultLatLng: google.maps.LatLngLiteral = {
   lat: 40.7607793,
   lng: -111.8910474,
 }
 
-export const Map: React.FC<MapProps> = ({ location, zoom = 15 }) => {
-  const [map, setMap] = React.useState<google.maps.Map>()
-  const [marker, setMarker] = React.useState<google.maps.Marker>()
-  const mapRef = React.useRef<HTMLDivElement>(null)
+export const Map: React.FC<MapProps> = ({ latLng, zoom = 15 }) => {
+  const [map, setMap] = useState<google.maps.Map>()
+  const [marker, setMarker] = useState<google.maps.Marker>()
+  const mapRef = useRef<HTMLDivElement>(null)
 
-  const initMap = React.useCallback(() => {
+  const initMap = useCallback(() => {
     if (mapRef.current) {
       const newMap = new google.maps.Map(mapRef.current, {
         zoom,
-        center: location || defaultLocation,
+        center: latLng || defaultLatLng,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         mapTypeControl: false,
         streetViewControl: false,
@@ -28,18 +28,18 @@ export const Map: React.FC<MapProps> = ({ location, zoom = 15 }) => {
       setMap(newMap)
       setMarker(newMarker)
     }
-  }, [setMap, setMarker, location, zoom])
+  }, [setMap, setMarker, latLng, zoom])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!map && window.google) {
       initMap()
     }
     if (!map || !marker) {
       return undefined
     }
-    map.setCenter(location || defaultLocation)
-    marker.setPosition(location || defaultLocation)
-  }, [initMap, map, marker, location])
+    map.setCenter(latLng || defaultLatLng)
+    marker.setPosition(latLng || defaultLatLng)
+  }, [initMap, map, marker, latLng])
 
   return <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
 }

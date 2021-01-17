@@ -6,9 +6,9 @@ import LocationOnIcon from '@material-ui/icons/LocationOn'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import parse from 'autosuggest-highlight/parse'
 import throttle from 'lodash/throttle'
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
-import { getAutocompleteService } from '../utils'
+import { getAutocompleteService, placeIdToLatLng } from '../utils'
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -18,17 +18,20 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 interface LocationSearchProps {
-  onLocationChange?: (placeId: string | null) => void
+  onLocationChange?: (location: {
+    placeId: string | null
+    latLng: google.maps.LatLngLiteral | null
+  }) => void
 }
 
 export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationChange = () => {} }) => {
   const autocompleteService = getAutocompleteService()
   const classes = useStyles()
-  const [value, setValue] = React.useState<google.maps.places.AutocompletePrediction | null>(null)
-  const [inputValue, setInputValue] = React.useState('')
-  const [options, setOptions] = React.useState<google.maps.places.AutocompletePrediction[]>([])
+  const [value, setValue] = useState<google.maps.places.AutocompletePrediction | null>(null)
+  const [inputValue, setInputValue] = useState('')
+  const [options, setOptions] = useState<google.maps.places.AutocompletePrediction[]>([])
 
-  const fetch = React.useMemo(
+  const fetch = useMemo(
     () =>
       throttle(
         (
@@ -45,7 +48,7 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationChange
     [autocompleteService],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     let active = true
 
     if (inputValue === '') {
@@ -74,12 +77,17 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationChange
     }
   }, [value, inputValue, fetch])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!value) {
-      onLocationChange(null)
+      onLocationChange({ placeId: null, latLng: null })
       return
     }
-    onLocationChange(value.place_id)
+
+    const propagateLocationChange = async () => {
+      const latLng = await placeIdToLatLng(value.place_id)
+      onLocationChange({ placeId: value.place_id, latLng })
+    }
+    propagateLocationChange()
   }, [value, onLocationChange])
 
   return (

@@ -2,10 +2,10 @@ import Container from '@material-ui/core/Container'
 import React from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 
-import { useUser } from '../state'
+import { useUserContext } from '../state'
 
 export const UserHome: React.FC = () => {
-  const { user } = useUser()
+  const { user } = useUserContext()
 
   return (
     <Container component="main" maxWidth="lg">

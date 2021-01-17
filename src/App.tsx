@@ -4,11 +4,11 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
 import { Nav } from './components'
 import { CreateEvent, UserHome, Login, PublicHome, SignUp, Loading } from './pages'
 import { PrivateRoute } from './components'
-import { useUser } from './state'
+import { EventContextProvider, useUserContext } from './state'
 import { loadGoogleMapsScript } from './utils'
 
 export const App: React.FC = () => {
-  const { user, initialized } = useUser()
+  const { user, initialized } = useUserContext()
   const [mapsScriptLoaded, setMapsScriptLoaded] = useState(false)
 
   const handleMapsScriptLoad = useCallback(() => {
@@ -37,7 +37,9 @@ export const App: React.FC = () => {
           {user ? <Redirect to="/" /> : initialized ? <Login /> : <Loading />}
         </Route>
         <PrivateRoute path="/create">
-          <CreateEvent />
+          <EventContextProvider>
+            <CreateEvent />
+          </EventContextProvider>
         </PrivateRoute>
       </Switch>
     </BrowserRouter>

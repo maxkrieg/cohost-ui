@@ -6,12 +6,11 @@ import Step from '@material-ui/core/Step'
 import StepLabel from '@material-ui/core/StepLabel'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
-// import AddressForm from './AddressForm'
-// import PaymentForm from './PaymentForm'
-// import Review from './Review'
 import { EventAdditionalDetailsForm, EventDetailsForm, EventItemsForm } from '../components'
+import { useEventContext } from '../state'
 
 import { Copyright } from '../components'
+import { createEvent } from '../api'
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -72,14 +71,26 @@ function getStepContent(step: number) {
 export const CreateEvent = () => {
   const classes = useStyles()
   const [activeStep, setActiveStep] = useState(0)
+  const { event } = useEventContext()
 
   const handleNext = () => {
     setActiveStep(activeStep + 1)
   }
 
+  const handleSubmit = async () => {
+    try {
+      await createEvent(event!)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   const handleBack = () => {
     setActiveStep(activeStep - 1)
   }
+
+  const isFirstStep = activeStep === 0
+  const isLastStep = activeStep === steps.length - 1
 
   return (
     <React.Fragment>
@@ -98,7 +109,7 @@ export const CreateEvent = () => {
           <React.Fragment>
             {getStepContent(activeStep)}
             <div className={classes.buttons}>
-              {activeStep !== 0 && (
+              {!isFirstStep && (
                 <Button onClick={handleBack} className={classes.button}>
                   Back
                 </Button>
@@ -106,10 +117,10 @@ export const CreateEvent = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={handleNext}
+                onClick={isLastStep ? handleSubmit : handleNext}
                 className={classes.button}
               >
-                {activeStep === steps.length - 1 ? 'Create' : 'Next'}
+                {isLastStep ? 'Create' : 'Next'}
               </Button>
             </div>
           </React.Fragment>

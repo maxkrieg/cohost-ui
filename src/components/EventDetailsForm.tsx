@@ -1,47 +1,29 @@
-import { Checkbox, FormControlLabel, Grid, TextField, Typography } from '@material-ui/core'
+import { Grid, TextField, Typography } from '@material-ui/core'
 import { KeyboardDatePicker, KeyboardTimePicker } from '@material-ui/pickers'
 import React from 'react'
+import { useEventContext } from '../state'
 
-import { placeIdToLatLng } from '../utils'
 import { LocationSearch } from './LocationSearch'
 import { Map } from './Map'
 
 export const EventDetailsForm: React.FC = () => {
-  const [title, setTitle] = React.useState('')
-  const [startDate, setStartDate] = React.useState<Date | null>(new Date())
-  const [endDate, setEndDate] = React.useState<Date | null>(new Date())
-  const [googleMapsId, setGoogleMapsId] = React.useState<string | null>(null)
-  const [location, setLocation] = React.useState<google.maps.LatLngLiteral | null>(null)
-  const [privateBoxChecked, setPrivateBoxChecked] = React.useState(false)
+  const { event, setEvent } = useEventContext()
 
-  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value)
+  const handleTitleChange = (changeEvent: React.ChangeEvent<HTMLInputElement>) => {
+    setEvent({ ...event, title: changeEvent.target.value })
   }
   const handleStartDateChange = (date: Date | null) => {
-    setStartDate(date)
+    setEvent({ ...event, startDate: date })
   }
   const handleEndDateChange = (date: Date | null) => {
-    setEndDate(date)
+    setEvent({ ...event, endDate: date })
   }
-  const handlePrivateBoxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrivateBoxChecked(event.target.checked)
+  const handleLocationChange = (location: {
+    placeId: string | null
+    latLng: google.maps.LatLngLiteral | null
+  }) => {
+    setEvent({ ...event, ...location })
   }
-  const handleLocationChange = (placeId: string | null) => {
-    setGoogleMapsId(placeId)
-  }
-
-  React.useEffect(() => {
-    if (!googleMapsId) {
-      setLocation(null)
-      return
-    }
-
-    const getAndSetLatLng = async () => {
-      const latLng = await placeIdToLatLng(googleMapsId)
-      setLocation(latLng)
-    }
-    getAndSetLatLng()
-  }, [googleMapsId])
 
   return (
     <React.Fragment>
@@ -56,7 +38,7 @@ export const EventDetailsForm: React.FC = () => {
             label="Event title"
             fullWidth
             autoComplete="event-title"
-            value={title}
+            value={event.title}
             onChange={handleTitleChange}
           />
         </Grid>
@@ -68,7 +50,7 @@ export const EventDetailsForm: React.FC = () => {
             margin="normal"
             id="start-date"
             label="Start Date"
-            value={startDate}
+            value={event.startDate}
             onChange={handleStartDateChange}
             KeyboardButtonProps={{
               'aria-label': 'change date',
@@ -80,7 +62,7 @@ export const EventDetailsForm: React.FC = () => {
             margin="normal"
             id="start-time"
             label="Start time"
-            value={startDate}
+            value={event.startDate}
             onChange={handleStartDateChange}
             KeyboardButtonProps={{
               'aria-label': 'change time',
@@ -95,7 +77,7 @@ export const EventDetailsForm: React.FC = () => {
             margin="normal"
             id="end-date"
             label="End Date"
-            value={endDate}
+            value={event.endDate}
             onChange={handleEndDateChange}
             KeyboardButtonProps={{
               'aria-label': 'change date',
@@ -107,7 +89,7 @@ export const EventDetailsForm: React.FC = () => {
             margin="normal"
             id="end-time"
             label="End time"
-            value={endDate}
+            value={event.endDate}
             onChange={handleEndDateChange}
             KeyboardButtonProps={{
               'aria-label': 'change time',
@@ -119,26 +101,12 @@ export const EventDetailsForm: React.FC = () => {
           <div
             style={{
               width: '100%',
-              height: `${location ? '300px' : '0px'}`,
+              height: `${event.latLng ? '300px' : '0px'}`,
               marginTop: '10px',
             }}
           >
-            {location && <Map location={location} zoom={15} />}
+            {event.latLng && <Map latLng={event.latLng} zoom={15} />}
           </div>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={privateBoxChecked}
-                onChange={handlePrivateBoxChange}
-                color="secondary"
-                name="makePrivate"
-                value="yes"
-              />
-            }
-            label="Make this a private event (only invited friends can view)"
-          />
         </Grid>
       </Grid>
     </React.Fragment>

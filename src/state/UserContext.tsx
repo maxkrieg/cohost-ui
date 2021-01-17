@@ -1,4 +1,12 @@
-import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
+import {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+} from 'react'
 
 import { fetchUser } from '../api'
 import { IUser } from '../interfaces'
@@ -34,11 +42,17 @@ export const UserContextProvider: React.FC = ({ children }) => {
     fetchAndSetUser()
   }, [])
 
-  return (
-    <UserContext.Provider value={{ user, setUser, initialized, setInitialized }}>
-      {children}
-    </UserContext.Provider>
+  const value = useMemo(
+    () => ({
+      user,
+      setUser,
+      initialized,
+      setInitialized,
+    }),
+    [user, initialized],
   )
+
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>
 }
 
-export const useUser = () => useContext(UserContext)
+export const useUserContext = () => useContext(UserContext)
