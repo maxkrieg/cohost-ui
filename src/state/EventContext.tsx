@@ -1,4 +1,4 @@
-import { createContext, useMemo, useState, useContext, Dispatch, SetStateAction } from 'react'
+import { createContext, useContext, Dispatch, useReducer } from 'react'
 
 export interface IEvent {
   title: string
@@ -6,12 +6,11 @@ export interface IEvent {
   startDate: Date | null
   endDate: Date | null
   placeId: string | null
-  latLng: google.maps.LatLngLiteral | null
 }
 
 export type EventContextType = {
-  event: IEvent
-  setEvent: Dispatch<SetStateAction<IEvent>>
+  state: IEvent
+  dispatch: Dispatch<any>
 }
 
 const defaultEvent: IEvent = {
@@ -19,12 +18,11 @@ const defaultEvent: IEvent = {
   startDate: new Date(),
   endDate: new Date(),
   placeId: null,
-  latLng: null,
 }
 
 const EventContext = createContext<EventContextType>({
-  event: defaultEvent,
-  setEvent: () => console.warn('no event provider'),
+  state: defaultEvent,
+  dispatch: () => console.warn('no event provider'),
 })
 
 export const useEventContext = () => {
@@ -35,14 +33,35 @@ export const useEventContext = () => {
   return context
 }
 
+export enum EventActionTypes {
+  UpdateTitle = 'UPDATE_TITLE',
+  UpdateStartDate = 'UPDATE_START_DATE',
+  UpdateEndDate = 'UPDATE_END_DATE',
+  UpdatePlaceId = 'UPDATE_PLACE_ID',
+}
+
+type EventAction =
+  | { type: EventActionTypes.UpdateTitle; payload: string }
+  | { type: EventActionTypes.UpdateStartDate; payload: Date | null }
+  | { type: EventActionTypes.UpdateEndDate; payload: Date | null }
+  | { type: EventActionTypes.UpdatePlaceId; payload: string }
+
+const eventReducer = (state: IEvent, action: EventAction): IEvent => {
+  switch (action.type) {
+    case EventActionTypes.UpdateTitle:
+      return { ...state, title: action.payload }
+    case EventActionTypes.UpdateStartDate:
+      return { ...state, startDate: action.payload }
+    case EventActionTypes.UpdateEndDate:
+      return { ...state, endDate: action.payload }
+    case EventActionTypes.UpdatePlaceId:
+      return { ...state, placeId: action.payload }
+    default:
+      throw new Error('error updating event')
+  }
+}
+
 export const EventContextProvider: React.FC = (props) => {
-  const [event, setEvent] = useState<IEvent>(defaultEvent)
-  const value = useMemo(
-    () => ({
-      event,
-      setEvent,
-    }),
-    [event],
-  )
-  return <EventContext.Provider value={value} {...props} />
+  const [state, dispatch] = useReducer(eventReducer, defaultEvent)
+  return <EventContext.Provider value={{ state, dispatch }} {...props} />
 }

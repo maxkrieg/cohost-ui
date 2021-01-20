@@ -10,6 +10,9 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import { getAutocompleteService, placeIdToLatLng } from '../utils'
 
+type GoogleLatLngLiteral = google.maps.LatLngLiteral
+type GoogleAutoCompletePrediction = google.maps.places.AutocompletePrediction
+
 const useStyles = makeStyles((theme) => ({
   icon: {
     color: theme.palette.text.secondary,
@@ -20,16 +23,16 @@ const useStyles = makeStyles((theme) => ({
 interface LocationSearchProps {
   onLocationChange?: (location: {
     placeId: string | null
-    latLng: google.maps.LatLngLiteral | null
+    latLng: GoogleLatLngLiteral | null
   }) => void
 }
 
 export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationChange = () => {} }) => {
   const autocompleteService = getAutocompleteService()
   const classes = useStyles()
-  const [value, setValue] = useState<google.maps.places.AutocompletePrediction | null>(null)
+  const [value, setValue] = useState<GoogleAutoCompletePrediction | null>(null)
   const [inputValue, setInputValue] = useState('')
-  const [options, setOptions] = useState<google.maps.places.AutocompletePrediction[]>([])
+  const [options, setOptions] = useState<GoogleAutoCompletePrediction[]>([])
 
   const fetch = useMemo(
     () =>
@@ -37,7 +40,7 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationChange
         (
           request: { input: string },
           callback: (
-            result: google.maps.places.AutocompletePrediction[],
+            result: GoogleAutoCompletePrediction[],
             status: google.maps.places.PlacesServiceStatus,
           ) => void,
         ) => {
@@ -58,7 +61,7 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationChange
 
     fetch({ input: inputValue }, (results) => {
       if (active) {
-        let newOptions: google.maps.places.AutocompletePrediction[] = []
+        let newOptions: GoogleAutoCompletePrediction[] = []
 
         if (value) {
           newOptions = [value]
@@ -77,18 +80,23 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationChange
     }
   }, [value, inputValue, fetch])
 
-  useEffect(() => {
-    if (!value) {
+  const handleChange = async (
+    event: React.ChangeEvent<{}>,
+    newValue: GoogleAutoCompletePrediction | null,
+  ) => {
+    setOptions(newValue ? [newValue, ...options] : options)
+    setValue(newValue)
+    if (newValue) {
+      const latLng = await placeIdToLatLng(newValue.place_id)
+      onLocationChange({ placeId: newValue.place_id, latLng })
+    } else {
       onLocationChange({ placeId: null, latLng: null })
-      return
     }
+  }
 
-    const propagateLocationChange = async () => {
-      const latLng = await placeIdToLatLng(value.place_id)
-      onLocationChange({ placeId: value.place_id, latLng })
-    }
-    propagateLocationChange()
-  }, [value, onLocationChange])
+  const handleInputChange = (event: React.ChangeEvent<{}>, newInputValue: string) => {
+    setInputValue(newInputValue)
+  }
 
   return (
     <Autocomplete
@@ -100,13 +108,8 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationChange
       includeInputInList
       filterSelectedOptions
       value={value}
-      onChange={(event: any, newValue: google.maps.places.AutocompletePrediction | null) => {
-        setOptions(newValue ? [newValue, ...options] : options)
-        setValue(newValue)
-      }}
-      onInputChange={(event, newInputValue) => {
-        setInputValue(newInputValue)
-      }}
+      onChange={handleChange}
+      onInputChange={handleInputChange}
       renderInput={(params) => (
         <TextField {...params} label="Add a location" variant="outlined" fullWidth />
       )}

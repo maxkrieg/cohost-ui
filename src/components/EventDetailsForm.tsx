@@ -1,28 +1,31 @@
 import { Grid, TextField, Typography } from '@material-ui/core'
 import { KeyboardDatePicker, KeyboardTimePicker } from '@material-ui/pickers'
-import React from 'react'
-import { useEventContext } from '../state'
+import React, { useState } from 'react'
+import { useEventContext, EventActionTypes } from '../state'
 
 import { LocationSearch } from './LocationSearch'
 import { Map } from './Map'
 
 export const EventDetailsForm: React.FC = () => {
-  const { event, setEvent } = useEventContext()
+  const { state, dispatch } = useEventContext()
+  const [latLng, setLatLng] = useState<google.maps.LatLngLiteral | null>(null)
 
   const handleTitleChange = (changeEvent: React.ChangeEvent<HTMLInputElement>) => {
-    setEvent({ ...event, title: changeEvent.target.value })
+    dispatch({ type: EventActionTypes.UpdateTitle, payload: changeEvent.target.value })
   }
   const handleStartDateChange = (date: Date | null) => {
-    setEvent({ ...event, startDate: date })
+    dispatch({ type: EventActionTypes.UpdateStartDate, payload: date })
   }
   const handleEndDateChange = (date: Date | null) => {
-    setEvent({ ...event, endDate: date })
+    dispatch({ type: EventActionTypes.UpdateEndDate, payload: date })
   }
+
   const handleLocationChange = (location: {
     placeId: string | null
     latLng: google.maps.LatLngLiteral | null
   }) => {
-    setEvent({ ...event, ...location })
+    setLatLng(location.latLng)
+    dispatch({ type: EventActionTypes.UpdatePlaceId, payload: location.placeId })
   }
 
   return (
@@ -38,7 +41,7 @@ export const EventDetailsForm: React.FC = () => {
             label="Event title"
             fullWidth
             autoComplete="event-title"
-            value={event.title}
+            value={state.title}
             onChange={handleTitleChange}
           />
         </Grid>
@@ -50,7 +53,7 @@ export const EventDetailsForm: React.FC = () => {
             margin="normal"
             id="start-date"
             label="Start Date"
-            value={event.startDate}
+            value={state.startDate}
             onChange={handleStartDateChange}
             KeyboardButtonProps={{
               'aria-label': 'change date',
@@ -62,7 +65,7 @@ export const EventDetailsForm: React.FC = () => {
             margin="normal"
             id="start-time"
             label="Start time"
-            value={event.startDate}
+            value={state.startDate}
             onChange={handleStartDateChange}
             KeyboardButtonProps={{
               'aria-label': 'change time',
@@ -77,7 +80,7 @@ export const EventDetailsForm: React.FC = () => {
             margin="normal"
             id="end-date"
             label="End Date"
-            value={event.endDate}
+            value={state.endDate}
             onChange={handleEndDateChange}
             KeyboardButtonProps={{
               'aria-label': 'change date',
@@ -89,7 +92,7 @@ export const EventDetailsForm: React.FC = () => {
             margin="normal"
             id="end-time"
             label="End time"
-            value={event.endDate}
+            value={state.endDate}
             onChange={handleEndDateChange}
             KeyboardButtonProps={{
               'aria-label': 'change time',
@@ -101,11 +104,11 @@ export const EventDetailsForm: React.FC = () => {
           <div
             style={{
               width: '100%',
-              height: `${event.latLng ? '300px' : '0px'}`,
+              height: `${latLng ? '300px' : '0px'}`,
               marginTop: '10px',
             }}
           >
-            {event.latLng && <Map latLng={event.latLng} zoom={15} />}
+            {latLng && <Map latLng={latLng} zoom={15} />}
           </div>
         </Grid>
       </Grid>

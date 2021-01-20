@@ -71,7 +71,7 @@ function getStepContent(step: number) {
 export const CreateEvent = () => {
   const classes = useStyles()
   const [activeStep, setActiveStep] = useState(0)
-  const { event } = useEventContext()
+  const { state } = useEventContext()
 
   const handleNext = () => {
     setActiveStep(activeStep + 1)
@@ -79,7 +79,7 @@ export const CreateEvent = () => {
 
   const handleSubmit = async () => {
     try {
-      await createEvent(event!)
+      await createEvent(state!)
     } catch (e) {
       console.error(e)
     }

@@ -36,6 +36,7 @@ export const App: React.FC = () => {
         <Route path="/login">
           {user ? <Redirect to="/" /> : initialized ? <Login /> : <Loading />}
         </Route>
+
         <PrivateRoute path="/create">
           <EventContextProvider>
             <CreateEvent />
